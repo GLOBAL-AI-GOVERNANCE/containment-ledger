@@ -15,6 +15,7 @@ import {
   emptyLedger,
   pairKey,
   pairs,
+  reconcile,
   review,
   sanitize,
 } from "../lib/ledger";
@@ -47,6 +48,22 @@ function loadSaved(): LedgerState {
   }
 }
 
+function persist(state: LedgerState) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    // Storage can be denied or full. The review stays in memory for this visit.
+  }
+}
+
+function forgetSaved() {
+  try {
+    localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // A denied store cannot be cleared from script. The in-memory record is still reset.
+  }
+}
+
 export function LedgerApp() {
   const [state, setState] = useState<LedgerState>(SEED);
   const [phase, setPhase] = useState(4);
@@ -62,7 +79,7 @@ export function LedgerApp() {
 
   useEffect(() => {
     if (!ready) return;
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    persist(state);
   }, [state, ready]);
 
   const result = useMemo(() => review(state), [state]);
@@ -76,50 +93,64 @@ export function LedgerApp() {
     });
   }, [state.domains, state.paths]);
 
+  function commit(recipe: (current: LedgerState) => LedgerState) {
+    setState((current) => reconcile(recipe(current)));
+  }
+
   function patch(partial: Partial<LedgerState>) {
-    setState((s) => ({ ...s, ...partial }));
+    commit((current) => ({ ...current, ...partial }));
   }
 
   function setPath(a: string, b: string, status: PathStatus) {
     const key = pairKey(a, b);
-    setState((s) => ({ ...s, paths: { ...s.paths, [key]: status } }));
+    commit((current) => ({ ...current, paths: { ...current.paths, [key]: status } }));
   }
 
   function setEvidence(id: string, value: Evidence) {
-    setState((s) => ({ ...s, evidence: { ...s.evidence, [id]: value } }));
+    commit((current) => ({ ...current, evidence: { ...current.evidence, [id]: value } }));
   }
 
   function addDomain() {
     if (state.domains.length >= 8) return;
     const id = cryptoId();
-    setState((s) => ({
-      ...s,
-      domains: [...s.domains, { id, name: "New domain", kind: "user", crown: false }],
+    commit((current) => ({
+      ...current,
+      domains: [...current.domains, { id, name: "New domain", kind: "user", crown: false }],
     }));
   }
 
   function updateDomain(id: string, patchDomain: Partial<(typeof state.domains)[number]>) {
-    setState((s) => ({
-      ...s,
-      domains: s.domains.map((d) => (d.id === id ? { ...d, ...patchDomain } : d)),
+    commit((current) => ({
+      ...current,
+      domains: current.domains.map((d) => (d.id === id ? { ...d, ...patchDomain } : d)),
     }));
   }
 
   function removeDomain(id: string) {
-    setState((s) => {
-      const domains = s.domains.filter((d) => d.id !== id);
+    commit((current) => {
+      const domains = current.domains.filter((d) => d.id !== id);
       const paths: LedgerState["paths"] = {};
-      for (const [k, v] of Object.entries(s.paths)) {
+      for (const [k, v] of Object.entries(current.paths)) {
         const [a, b] = k.split("|");
         if (a !== id && b !== id) paths[k] = v;
       }
-      return { ...s, domains, paths };
+      return { ...current, domains, paths };
     });
   }
 
   function setDisposition(disposition: Disposition) {
-    if (disposition === "bounded" && !result.canBound) return;
-    patch({ disposition });
+    setState((current) => {
+      if (disposition === "bounded") {
+        if (!review(current).canBound) return reconcile(current);
+        return { ...current, disposition: "bounded", boundedInvalidated: false };
+      }
+      return { ...current, disposition };
+    });
+  }
+
+  function clearSaved() {
+    forgetSaved();
+    setState(emptyLedger());
   }
 
   async function copyRecord() {
@@ -167,10 +198,10 @@ export function LedgerApp() {
           </button>
           <button
             type="button"
-            onClick={() => setState(emptyLedger())}
+            onClick={clearSaved}
             className="inline-flex h-11 items-center rounded-card border border-line px-3 text-sm text-mist"
           >
-            Clear
+            Clear saved
           </button>
         </div>
       </header>
@@ -345,8 +376,8 @@ export function LedgerApp() {
         <div className="rounded-card border border-line bg-panel p-4 sm:p-5">
           <h2 className="text-sm font-medium text-bone">Evidence</h2>
           <p className="mt-1 text-sm text-mist">
-            Missing evidence cannot read as strong. {result.evidenced} evidenced · {result.partial} partial ·{" "}
-            {result.missing} missing.
+            These marks are self-reported. They are not an independent check. Missing cannot read as strong.{" "}
+            {result.evidenced} evidenced · {result.partial} partial · {result.missing} missing.
           </p>
           <ul className="mt-3 space-y-3">
             {CHECKS.map((c) => {
@@ -432,7 +463,10 @@ export function LedgerApp() {
             <Copy className="size-4" aria-hidden />
             {copied ? "Copied" : "Copy decision record"}
           </button>
-          <p className="text-xs text-mist">Saved in this browser only.</p>
+          <p className="text-xs text-mist">
+            Saved in this browser only. Nothing is uploaded. Clear saved removes the previous record from this browser.
+            {state.boundedInvalidated ? " A prior bounded selection was invalidated." : ""}
+          </p>
         </div>
       </section>
 
@@ -446,7 +480,8 @@ export function LedgerApp() {
         >
           AI Cyber Resilience Framework
         </a>
-        . AI may assist. Humans retain authority.
+        . Ten checks here are a simplified interface. They do not replace that framework's 20-item checklist. The
+        record stays in this browser. AI may assist. Humans retain authority.
       </footer>
     </main>
   );

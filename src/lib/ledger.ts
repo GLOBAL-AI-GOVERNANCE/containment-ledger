@@ -20,6 +20,7 @@ export type LedgerState = {
   evidence: Record<string, Evidence>;
   note: string;
   disposition: Disposition;
+  boundedInvalidated: boolean;
 };
 
 export type CheckItem = {
@@ -157,6 +158,7 @@ export const SEED: LedgerState = {
   },
   note: "",
   disposition: "incomplete",
+  boundedInvalidated: false,
 };
 
 export function emptyLedger(): LedgerState {
@@ -167,6 +169,7 @@ export function emptyLedger(): LedgerState {
     evidence: blankEvidence(),
     note: "",
     disposition: "incomplete",
+    boundedInvalidated: false,
   };
 }
 
@@ -205,18 +208,19 @@ export function sanitize(raw: unknown): LedgerState {
       if (EVIDENCE.includes(v as Evidence)) evidence[c.id] = v as Evidence;
     }
   }
-  const disposition: Disposition =
+  const requested: Disposition =
     r.disposition === "gaps" || r.disposition === "bounded" || r.disposition === "incomplete"
       ? r.disposition
       : "incomplete";
-  return {
+  return reconcile({
     systemName: typeof r.systemName === "string" && r.systemName.trim() ? r.systemName.slice(0, 80) : "Unnamed system",
     domains,
     paths,
     evidence,
     note: typeof r.note === "string" ? r.note.slice(0, 600) : "",
-    disposition,
-  };
+    disposition: requested,
+    boundedInvalidated: r.boundedInvalidated === true,
+  });
 }
 
 export function cryptoId(): string {
@@ -293,17 +297,35 @@ export function review(state: LedgerState): Review {
   };
 }
 
+export function reconcile(state: LedgerState): LedgerState {
+  if (state.disposition === "bounded" && !review(state).canBound) {
+    return { ...state, disposition: "gaps", boundedInvalidated: true };
+  }
+  return state;
+}
+
+export function currentDisposition(state: LedgerState, result: Review): Disposition {
+  if (state.disposition === "bounded" && !result.canBound) return "gaps";
+  return state.disposition;
+}
+
 export function decisionText(state: LedgerState, result: Review): string {
+  const current = currentDisposition(state, result);
+  const invalidated = state.boundedInvalidated || (state.disposition === "bounded" && !result.canBound);
   const lines = [
     `Containment Ledger — decision record`,
     `System: ${state.systemName}`,
     `Headline: ${result.headline}`,
     `Domains: ${state.domains.map((d) => `${d.name}${d.crown ? " (crown)" : ""}`).join("; ") || "none"}`,
     `Paths: ${result.isolated} isolated, ${result.mediated} mediated, ${result.implicit} implicit, ${result.unassessed} unassessed`,
-    `Evidence: ${result.evidenced} evidenced, ${result.partial} partial, ${result.missing} missing`,
+    `Evidence: ${result.evidenced} self-reported evidenced, ${result.partial} partial, ${result.missing} missing`,
     `Critical gaps: ${result.criticalOpen.length ? result.criticalOpen.join(" | ") : "none recorded"}`,
-    `Human disposition: ${state.disposition}`,
+    `Current human disposition: ${current}`,
+    invalidated
+      ? "Prior bounded selection: invalidated. It is not a current conclusion."
+      : "Prior bounded selection: none",
     state.note ? `Note: ${state.note}` : "Note: none",
+    `Self-reported marks are not independent verification.`,
     `authority_effect: NONE`,
     `Limit: synthetic structural review. Not certification, compliance, production authorization, or proof of deployed resilience.`,
   ];
