@@ -177,28 +177,57 @@ function isKind(v: unknown): v is DomainKind {
   return typeof v === "string" && KINDS.includes(v as DomainKind);
 }
 
+function safeDomainId(id: unknown): string | null {
+  if (typeof id !== "string" || !id) return null;
+  if (id.includes("|")) return null;
+  if (/[\s\u0000-\u001f\u007f\u2028\u2029]/.test(id)) return null;
+  return id;
+}
+
+function freshDomainId(used: Set<string>): string {
+  let n = 1;
+  let id = `d${n}`;
+  while (used.has(id)) {
+    n += 1;
+    id = `d${n}`;
+  }
+  return id;
+}
+
 export function sanitize(raw: unknown): LedgerState {
   if (!raw || typeof raw !== "object") return SEED;
   const r = raw as Partial<LedgerState>;
+  const used = new Set<string>();
+  const stable = new Set<string>();
   const domains: Domain[] = Array.isArray(r.domains)
     ? r.domains
         .filter((d): d is Domain => !!d && typeof d === "object")
-        .map((d) => ({
-          id: typeof d.id === "string" && d.id ? d.id : cryptoId(),
-          name: typeof d.name === "string" && d.name.trim() ? d.name.slice(0, 80) : "Domain",
-          kind: isKind(d.kind) ? d.kind : "user",
-          crown: Boolean(d.crown),
-        }))
         .slice(0, 8)
+        .map((d) => {
+          const candidate = safeDomainId(d.id);
+          const kept = Boolean(candidate && !used.has(candidate));
+          const id = kept ? (candidate as string) : freshDomainId(used);
+          used.add(id);
+          if (kept) stable.add(id);
+          return {
+            id,
+            name: typeof d.name === "string" && d.name.trim() ? d.name.slice(0, 80) : "Domain",
+            kind: isKind(d.kind) ? d.kind : "user",
+            crown: Boolean(d.crown),
+          };
+        })
     : [];
   const ids = new Set(domains.map((d) => d.id));
   const paths: Record<string, PathStatus> = {};
   if (r.paths && typeof r.paths === "object") {
     for (const [k, v] of Object.entries(r.paths)) {
-      const [a, b] = k.split("|");
-      if (a && b && ids.has(a) && ids.has(b) && PATHS.includes(v as PathStatus)) {
-        paths[pairKey(a, b)] = v as PathStatus;
-      }
+      const parts = k.split("|");
+      if (parts.length !== 2) continue;
+      const [a, b] = parts;
+      if (!a || !b || a === b) continue;
+      if (!stable.has(a) || !stable.has(b) || !ids.has(a) || !ids.has(b)) continue;
+      if (!PATHS.includes(v as PathStatus)) continue;
+      paths[pairKey(a, b)] = v as PathStatus;
     }
   }
   const evidence = blankEvidence();

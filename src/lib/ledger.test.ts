@@ -204,3 +204,89 @@ test("missing critical evidence cannot export a bounded conclusion", () => {
   assert.match(text, /Prior bounded selection: invalidated/);
   assert.equal(fieldLines(text, "authority_effect:").length, 1);
 });
+
+function hostilePair() {
+  return {
+    systemName: "Ambiguous pair",
+    domains: [
+      { id: "dup", name: "Left work", kind: "user", crown: false },
+      { id: "dup", name: "Right records", kind: "mission", crown: true },
+    ],
+    paths: { "dup|dup": "isolated" },
+    evidence: { ...evidenced },
+    note: "",
+    disposition: "bounded",
+    boundedInvalidated: false,
+  };
+}
+
+test("duplicate persisted domain ids cannot support a bounded review", () => {
+  const loaded = sanitize(hostilePair());
+  assert.equal(loaded.domains.length, 2);
+  assert.equal(new Set(loaded.domains.map((d) => d.id)).size, 2);
+  assert.equal(loaded.domains[0].name, "Left work");
+  assert.equal(loaded.domains[1].name, "Right records");
+  assert.equal(review(loaded).isolated, 0);
+  assert.ok(review(loaded).unassessed > 0);
+  assert.equal(review(loaded).canBound, false);
+  assert.equal(loaded.disposition, "gaps");
+  assert.equal(loaded.boundedInvalidated, true);
+  assert.doesNotMatch(exported(loaded), /Current human disposition: bounded/);
+  assert.match(exported(loaded), /authority_effect: NONE/);
+});
+
+test("a domain id containing the pair delimiter cannot keep a recorded isolation", () => {
+  const loaded = sanitize({
+    ...hostilePair(),
+    domains: [
+      { id: "left|work", name: "Left work", kind: "user", crown: false },
+      { id: "right", name: "Right records", kind: "mission", crown: true },
+    ],
+    paths: { "left|work|right": "isolated" },
+  });
+  assert.equal(loaded.domains[0].id.includes("|"), false);
+  assert.equal(review(loaded).isolated, 0);
+  assert.equal(loaded.disposition, "gaps");
+  assert.equal(loaded.boundedInvalidated, true);
+  assert.doesNotMatch(exported(loaded), /Current human disposition: bounded/);
+});
+
+test("empty and conflicting ids are replaced and do not inherit isolation", () => {
+  const loaded = sanitize({
+    ...hostilePair(),
+    domains: [
+      { id: "", name: "Left work", kind: "user", crown: false },
+      { id: "   ", name: "Right records", kind: "mission", crown: true },
+      { id: "left\nwork", name: "Third", kind: "data", crown: false },
+    ],
+    paths: { "d1|d2": "isolated", "d2|d3": "mediated" },
+  });
+  assert.equal(new Set(loaded.domains.map((d) => d.id)).size, 3);
+  assert.equal(review(loaded).isolated, 0);
+  assert.equal(review(loaded).mediated, 0);
+  assert.equal(loaded.disposition, "gaps");
+  assert.equal(loaded.boundedInvalidated, true);
+});
+
+test("a malformed path key is not counted as isolation", () => {
+  const loaded = sanitize({
+    ...bounded(),
+    paths: { "user|mission|extra": "isolated", "user|user": "isolated" },
+  });
+  assert.equal(review(loaded).isolated, 0);
+  assert.equal(review(loaded).unassessed, 1);
+  assert.equal(loaded.disposition, "gaps");
+  assert.equal(loaded.boundedInvalidated, true);
+  assert.doesNotMatch(exported(loaded), /Current human disposition: bounded/);
+});
+
+test("a valid saved record keeps its pair accounting", () => {
+  const loaded = sanitize(bounded());
+  const result = review(loaded);
+  assert.deepEqual(loaded.domains.map((d) => d.id), ["user", "mission"]);
+  assert.equal(result.isolated, 1);
+  assert.equal(result.unassessed, 0);
+  assert.equal(result.pairCount, 1);
+  assert.equal(loaded.disposition, "bounded");
+  assert.match(exported(loaded), /Current human disposition: bounded/);
+});
