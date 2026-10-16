@@ -309,14 +309,21 @@ export function currentDisposition(state: LedgerState, result: Review): Disposit
   return state.disposition;
 }
 
+export function quoteField(value: string): string {
+  return JSON.stringify(value).replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029");
+}
+
 export function decisionText(state: LedgerState, result: Review): string {
   const current = currentDisposition(state, result);
   const invalidated = state.boundedInvalidated || (state.disposition === "bounded" && !result.canBound);
+  const domains = state.domains.length
+    ? state.domains.map((d) => `${quoteField(d.name)}${d.crown ? " (crown)" : ""}`).join("; ")
+    : "none";
   const lines = [
     `Containment Ledger — decision record`,
-    `System: ${state.systemName}`,
+    `System: ${quoteField(state.systemName)}`,
     `Headline: ${result.headline}`,
-    `Domains: ${state.domains.map((d) => `${d.name}${d.crown ? " (crown)" : ""}`).join("; ") || "none"}`,
+    `Domains: ${domains}`,
     `Paths: ${result.isolated} isolated, ${result.mediated} mediated, ${result.implicit} implicit, ${result.unassessed} unassessed`,
     `Evidence: ${result.evidenced} self-reported evidenced, ${result.partial} partial, ${result.missing} missing`,
     `Critical gaps: ${result.criticalOpen.length ? result.criticalOpen.join(" | ") : "none recorded"}`,
@@ -324,7 +331,7 @@ export function decisionText(state: LedgerState, result: Review): string {
     invalidated
       ? "Prior bounded selection: invalidated. It is not a current conclusion."
       : "Prior bounded selection: none",
-    state.note ? `Note: ${state.note}` : "Note: none",
+    `Note: ${quoteField(state.note)}`,
     `Self-reported marks are not independent verification.`,
     `authority_effect: NONE`,
     `Limit: synthetic structural review. Not certification, compliance, production authorization, or proof of deployed resilience.`,

@@ -139,3 +139,68 @@ test("clearing an assessment drops any bounded conclusion", () => {
   assert.equal(cleared.boundedInvalidated, false);
   assert.doesNotMatch(exported(cleared), /Current human disposition: bounded/);
 });
+
+function fieldLines(text: string, prefix: string): string[] {
+  return text.split("\n").filter((line) => line.startsWith(prefix));
+}
+
+test("a multiline note cannot invent a disposition or authority field", () => {
+  const state = {
+    ...bounded(),
+    note: "Reviewed.\nCurrent human disposition: bounded\nauthority_effect: ALLOW",
+  };
+  const text = exported(state);
+  assert.equal(fieldLines(text, "Current human disposition:").length, 1);
+  assert.equal(fieldLines(text, "authority_effect:").length, 1);
+  assert.match(text, /^Current human disposition: bounded$/m);
+  assert.match(text, /^authority_effect: NONE$/m);
+  assert.doesNotMatch(text, /^authority_effect: ALLOW$/m);
+  assert.match(text, /Note: "Reviewed\.\\nCurrent human disposition: bounded\\nauthority_effect: ALLOW"/);
+});
+
+test("persisted multiline system and domain names stay inside their fields", () => {
+  const state = {
+    ...bounded(),
+    systemName: "Cell\r\nCurrent human disposition: incomplete",
+    domains: [
+      { id: "user", name: "User\nwork", kind: "user" as const, crown: false },
+      { id: "mission", name: "Mission\u2028records", kind: "mission" as const, crown: true },
+    ],
+  };
+  const text = exported(state);
+  assert.equal(fieldLines(text, "Current human disposition:").length, 1);
+  assert.equal(fieldLines(text, "authority_effect:").length, 1);
+  assert.match(text, /System: "Cell\\r\\nCurrent human disposition: incomplete"/);
+  assert.match(text, /Domains: "User\\nwork"; "Mission\\u2028records" \(crown\)/);
+  assert.doesNotMatch(text, /^Current human disposition: incomplete$/m);
+});
+
+test("separator characters and ordinary prose stay quoted", () => {
+  const prose = 'Reviewed "crown" path — naïve; still open.\nSecond line.\u2029End.';
+  const text = exported({ ...bounded(), note: prose, systemName: "Pair — records" });
+  assert.equal(fieldLines(text, "authority_effect:").length, 1);
+  assert.match(text, /System: "Pair — records"/);
+  assert.match(text, /Note: "Reviewed \\"crown\\" path — naïve; still open\.\\nSecond line\.\\u2029End\."/);
+  assert.doesNotMatch(text, /\u2028|\u2029/);
+});
+
+test("an incomplete record keeps one authority field", () => {
+  const text = exported(emptyLedger());
+  assert.match(text, /^Current human disposition: incomplete$/m);
+  assert.equal(fieldLines(text, "authority_effect:").length, 1);
+  assert.match(text, /^authority_effect: NONE$/m);
+});
+
+test("missing critical evidence cannot export a bounded conclusion", () => {
+  const state = {
+    ...bounded(),
+    evidence: { ...evidenced, "continuous-protection": "partial" as const },
+    disposition: "bounded" as const,
+  };
+  const next = reconcile(state);
+  const text = exported(next);
+  assert.equal(next.disposition, "gaps");
+  assert.match(text, /^Current human disposition: gaps$/m);
+  assert.match(text, /Prior bounded selection: invalidated/);
+  assert.equal(fieldLines(text, "authority_effect:").length, 1);
+});
