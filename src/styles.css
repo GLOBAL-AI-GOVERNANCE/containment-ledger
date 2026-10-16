@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --color-ink: #0e1412;
+  --color-panel: #161d1a;
+  --color-panel-2: #1c2622;
+  --color-line: #2a3530;
+  --color-bone: #e7efe9;
+  --color-mist: #8fa198;
+  --color-brass: #c4a35a;
+  --color-gap: #c45c4a;
+  --color-sage: #7d9a78;
+  --radius-card: 0.875rem;
+}
+
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+
+  html,
+  body {
+    background: var(--color-ink);
+    color: var(--color-bone);
+    font-family: var(--font-sans);
+    min-height: 100%;
+  }
+
+  body {
+    background-image:
+      linear-gradient(to right, color-mix(in oklab, var(--color-line) 70%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklab, var(--color-line) 70%, transparent) 1px, transparent 1px);
+    background-size: 56px 56px;
+  }
+
+  ::selection {
+    background: color-mix(in oklab, var(--color-brass) 35%, transparent);
+    color: var(--color-bone);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

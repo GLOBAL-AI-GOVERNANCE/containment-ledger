@@ -1,0 +1,14 @@
+Containment Ledger
+Copyright 2026 Global AI Governance contributors
+
+A person records domains, paths, and evidence, then makes a disposition.
+The instrument does not certify a system, determine compliance, authorize
+operation, or prove deployed resilience.
+
+authority_effect: NONE
+
+NIST Special Publication 800-160 is a public source. This project is not
+affiliated with NIST.
+
+Companion documentation:
+https://github.com/GLOBAL-AI-GOVERNANCE/ai-cyber-resilience-framework
