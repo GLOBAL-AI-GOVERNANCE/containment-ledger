@@ -178,6 +178,25 @@ export function LedgerApp() {
 
   return (
     <main className="mx-auto min-h-screen w-full min-w-0 max-w-6xl overflow-x-hidden px-4 py-6 sm:px-6 sm:py-10">
+      <nav
+        aria-label="Global AI Governance sites"
+        className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-line pb-3 text-xs text-mist"
+      >
+        <a className="font-semibold tracking-widest text-bone uppercase" href="/global-ai-governance-toolkit/connect.html">
+          Global AI Governance
+        </a>
+        <span className="flex flex-1 flex-wrap gap-4">
+          <a className="hover:text-bone" href="/global-ai-governance-toolkit/">Toolkit</a>
+          <a className="text-bone" href="/containment-ledger/" aria-current="page">Containment Ledger</a>
+          <a className="hover:text-bone" href="/peace-os/">Peace OS</a>
+        </span>
+        <a
+          className="rounded-card border border-brass px-3 py-1 font-semibold text-brass"
+          href="/global-ai-governance-toolkit/connect.html#agents"
+        >
+          Connect your agent
+        </a>
+      </nav>
       <header className="mb-8 flex flex-col gap-4 border-b border-line pb-6 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="font-mono text-xs tracking-widest text-brass uppercase">Global AI Governance</p>
@@ -482,6 +501,16 @@ export function LedgerApp() {
         </a>
         . Ten checks here are a simplified interface. They do not replace that framework's 20-item checklist. The
         record stays in this browser. AI may assist. Humans retain authority.
+        <p className="mt-3 font-semibold text-bone">
+          <a className="text-brass underline decoration-line underline-offset-2" href="/global-ai-governance-toolkit/connect.html#agents">Connect your agent</a>
+          {" · "}
+          <a className="text-brass underline decoration-line underline-offset-2" href="/global-ai-governance-toolkit/connect.html#pilot">Run a pilot</a>
+          {" · "}
+          <a className="text-brass underline decoration-line underline-offset-2" href="/global-ai-governance-toolkit/connect.html#spec">Read the spec</a>
+        </p>
+        <p className="mt-1">
+          Global AI Governance · Outputs are non-authorizing (<code>authority_effect: NONE</code>) · Compatible with MCP-based agents
+        </p>
       </footer>
     </main>
   );
