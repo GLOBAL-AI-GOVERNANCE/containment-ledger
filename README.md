@@ -10,6 +10,8 @@
 
 A local, browser-based review of one system's security domains, the boundary paths between them, evidence marks, and a human disposition.
 
+**[Open the Ledger](https://global-ai-governance.github.io/containment-ledger/)** · runs locally in your browser. It is a structural review aid, not a certified security control or a security assessment.
+
 Name the domains. Mark every path. Record evidence. A person decides.
 
 Containment Ledger is an independent repository. It shares vocabulary with the [AI Cyber Resilience Framework](https://github.com/GLOBAL-AI-GOVERNANCE/ai-cyber-resilience-framework) but is not part of it, does not replace its documentation, and is not part of the framework's published v0.1.1 release.
