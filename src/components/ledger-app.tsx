@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Copy, Plus, RotateCcw, Trash2 } from "lucide-react";
 import {
   CHECKS,
@@ -19,6 +19,7 @@ import {
   review,
   sanitize,
 } from "../lib/ledger";
+import { CLEAR_CONFIRM, STORAGE_NOTICE, copyText, nextDomainName, probeStorage } from "../lib/browser";
 
 const STORAGE_KEY = "containment-ledger-v1";
 
@@ -48,11 +49,13 @@ function loadSaved(): LedgerState {
   }
 }
 
-function persist(state: LedgerState) {
+function persist(state: LedgerState): boolean {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    return true;
   } catch {
     // Storage can be denied or full. The review stays in memory for this visit.
+    return false;
   }
 }
 
@@ -68,19 +71,31 @@ export function LedgerApp() {
   const [state, setState] = useState<LedgerState>(SEED);
   const [phase, setPhase] = useState(4);
   const [copied, setCopied] = useState(false);
+  const [copyMessage, setCopyMessage] = useState("");
+  const [manualCopy, setManualCopy] = useState<string | null>(null);
+  const [storageOk, setStorageOk] = useState(true);
   const [ready, setReady] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const manualRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    setState(loadSaved());
+    const ok = probeStorage(() => window.localStorage);
+    setStorageOk(ok);
+    setState(ok ? loadSaved() : SEED);
     setReady(true);
     setMounted(true);
   }, []);
 
   useEffect(() => {
-    if (!ready) return;
-    persist(state);
-  }, [state, ready]);
+    if (!ready || !storageOk) return;
+    if (!persist(state)) setStorageOk(false);
+  }, [state, ready, storageOk]);
+
+  useEffect(() => {
+    if (manualCopy === null) return;
+    manualRef.current?.focus();
+    manualRef.current?.select();
+  }, [manualCopy]);
 
   const result = useMemo(() => review(state), [state]);
   const active = PHASES.find((p) => p.id === phase) ?? PHASES[3];
@@ -115,7 +130,7 @@ export function LedgerApp() {
     const id = cryptoId();
     commit((current) => ({
       ...current,
-      domains: [...current.domains, { id, name: "New domain", kind: "user", crown: false }],
+      domains: [...current.domains, { id, name: nextDomainName(current.domains), kind: "user", crown: false }],
     }));
   }
 
@@ -149,18 +164,23 @@ export function LedgerApp() {
   }
 
   function clearSaved() {
+    if (!window.confirm(CLEAR_CONFIRM)) return;
     forgetSaved();
     setState(emptyLedger());
   }
 
   async function copyRecord() {
     const text = decisionText(state, result);
-    try {
-      await navigator.clipboard.writeText(text);
+    const outcome = await copyText(typeof navigator === "undefined" ? undefined : navigator.clipboard, text);
+    if (outcome === "copied") {
+      setManualCopy(null);
       setCopied(true);
+      setCopyMessage("Decision record copied to the clipboard.");
       window.setTimeout(() => setCopied(false), 1600);
-    } catch {
+    } else {
       setCopied(false);
+      setCopyMessage("Copy failed: this browser blocked clipboard access. The record is selected below; copy it manually.");
+      setManualCopy(text);
     }
   }
 
@@ -179,6 +199,12 @@ export function LedgerApp() {
 
   return (
     <main className="mx-auto min-h-screen w-full min-w-0 max-w-6xl overflow-x-hidden px-4 py-6 sm:px-6 sm:py-10">
+      <a
+        href="#ledger-content"
+        className="sr-only rounded-card bg-bone px-4 py-2 text-sm font-medium text-ink focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50"
+      >
+        Skip to main content
+      </a>
       <nav
         aria-label="Global AI Governance sites"
         className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-line pb-3 text-xs text-mist"
@@ -198,7 +224,7 @@ export function LedgerApp() {
           Connect your agent
         </a>
       </nav>
-      <header className="mb-8 flex flex-col gap-4 border-b border-line pb-6 sm:flex-row sm:items-end sm:justify-between">
+      <header id="ledger-content" tabIndex={-1} className="mb-8 flex flex-col gap-4 border-b border-line pb-6 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="font-mono text-xs tracking-widest text-brass uppercase">Global AI Governance</p>
           <h1 className="mt-2 text-3xl font-medium tracking-tight text-bone sm:text-4xl">Containment Ledger</h1>
@@ -349,7 +375,7 @@ export function LedgerApp() {
                           "h-11 rounded-card border px-2 text-xs " +
                           (status === opt
                             ? opt === "implicit"
-                              ? "border-gap bg-gap text-bone"
+                              ? "border-gap bg-gap text-ink"
                               : opt === "isolated"
                                 ? "border-sage bg-sage text-ink"
                                 : opt === "mediated"
@@ -377,6 +403,7 @@ export function LedgerApp() {
               <button
                 key={p.id}
                 type="button"
+                aria-pressed={phase === p.id}
                 onClick={() => setPhase(p.id)}
                 className={
                   "h-11 shrink-0 rounded-card border px-3 text-sm " +
@@ -423,7 +450,7 @@ export function LedgerApp() {
                               ? "border-sage bg-sage text-ink"
                               : opt === "partial"
                                 ? "border-brass bg-brass text-ink"
-                                : "border-gap bg-gap text-bone"
+                                : "border-gap bg-gap text-ink"
                             : "border-line text-mist")
                         }
                       >
@@ -484,11 +511,40 @@ export function LedgerApp() {
             <Copy className="size-4" aria-hidden />
             {copied ? "Copied" : "Copy decision record"}
           </button>
-          <p className="text-xs text-mist">
-            Saved in this browser only. Nothing is uploaded. Clear saved removes the previous record from this browser.
+          <p className="text-xs text-mist" role="status" data-storage={storageOk ? "saved" : "memory-only"}>
+            {storageOk ? STORAGE_NOTICE.saved : <span className="text-bone">{STORAGE_NOTICE.memoryOnly}</span>}
             {state.boundedInvalidated ? " A prior bounded selection was invalidated." : ""}
           </p>
         </div>
+        <p className="mt-2 text-xs text-bone" role="status" aria-live="polite" id="copy-status">
+          {copyMessage}
+        </p>
+        {manualCopy !== null && (
+          <div className="mt-2">
+            <label htmlFor="manual-copy" className="font-mono text-xs tracking-wide text-mist uppercase">
+              Decision record (select and copy)
+            </label>
+            <textarea
+              id="manual-copy"
+              ref={manualRef}
+              readOnly
+              value={manualCopy}
+              rows={8}
+              aria-describedby="copy-status"
+              className="mt-2 w-full rounded-card border border-brass bg-ink px-3 py-2 font-mono text-xs text-bone"
+            />
+            <button
+              type="button"
+              onClick={() => {
+                setManualCopy(null);
+                setCopyMessage("");
+              }}
+              className="mt-2 inline-flex h-11 items-center rounded-card border border-line px-3 text-sm text-mist"
+            >
+              Close
+            </button>
+          </div>
+        )}
       </section>
 
       <footer className="mt-8 border-t border-line pt-4 text-xs leading-relaxed text-mist">

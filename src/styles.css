@@ -10,7 +10,7 @@
   --color-bone: #e7efe9;
   --color-mist: #8fa198;
   --color-brass: #c4a35a;
-  --color-gap: #c45c4a;
+  --color-gap: #da6d57;
   --color-sage: #7d9a78;
   --radius-card: 0.875rem;
 }
@@ -34,6 +34,11 @@
       linear-gradient(to right, color-mix(in oklab, var(--color-line) 70%, transparent) 1px, transparent 1px),
       linear-gradient(to bottom, color-mix(in oklab, var(--color-line) 70%, transparent) 1px, transparent 1px);
     background-size: 56px 56px;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brass);
+    outline-offset: 2px;
   }
 
   ::selection {
