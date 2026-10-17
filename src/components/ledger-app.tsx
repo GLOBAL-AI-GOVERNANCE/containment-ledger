@@ -396,7 +396,7 @@ export function LedgerApp() {
       </div>
 
       <section className="mt-6 grid min-w-0 gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-        <div className="rounded-card border border-line bg-panel p-4 sm:p-5">
+        <div className="min-w-0 rounded-card border border-line bg-panel p-4 sm:p-5">
           <h2 className="text-sm font-medium text-bone">Where structure is supposed to matter</h2>
           <div className="mt-3 flex min-w-0 gap-2 overflow-x-auto pb-1">
             {PHASES.map((p) => (
@@ -421,7 +421,7 @@ export function LedgerApp() {
           </article>
         </div>
 
-        <div className="rounded-card border border-line bg-panel p-4 sm:p-5">
+        <div className="min-w-0 rounded-card border border-line bg-panel p-4 sm:p-5">
           <h2 className="text-sm font-medium text-bone">Evidence</h2>
           <p className="mt-1 text-sm text-mist">
             These marks are self-reported. They are not an independent check. Missing cannot read as strong.{" "}
