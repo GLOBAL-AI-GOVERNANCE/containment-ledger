@@ -6,7 +6,7 @@
     "dev": "vite --host 127.0.0.1 --port 4173",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host 127.0.0.1 --port 4173",
-    "test": "node --experimental-strip-types --test src/lib/ledger.test.ts"
+    "test": "node --experimental-strip-types --test src/lib/ledger.test.ts src/lib/browser.test.ts"
   },
   "dependencies": {
     "lucide-react": "^1.57.0",

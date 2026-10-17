@@ -11,5 +11,5 @@
     "types": ["vite/client"]
   },
   "include": ["src"],
-  "exclude": ["src/lib/ledger.test.ts"]
+  "exclude": ["src/lib/ledger.test.ts", "src/lib/browser.test.ts"]
 }
