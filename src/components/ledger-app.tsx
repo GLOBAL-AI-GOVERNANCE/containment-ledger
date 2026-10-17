@@ -169,6 +169,7 @@ export function LedgerApp() {
       <main className="mx-auto min-h-screen max-w-6xl px-4 py-10">
         <p className="font-mono text-xs tracking-widest text-brass uppercase">Global AI Governance</p>
         <h1 className="mt-2 text-3xl font-medium text-bone">Containment Ledger</h1>
+        <p className="mt-1 font-mono text-xs tracking-wide text-mist uppercase">Security Boundary Review</p>
         <p className="mt-2 max-w-xl text-sm text-mist">
           AI compresses attack time. Structural security compresses blast radius.
         </p>
@@ -201,9 +202,10 @@ export function LedgerApp() {
         <div>
           <p className="font-mono text-xs tracking-widest text-brass uppercase">Global AI Governance</p>
           <h1 className="mt-2 text-3xl font-medium tracking-tight text-bone sm:text-4xl">Containment Ledger</h1>
+          <p className="mt-1 font-mono text-xs tracking-wide text-mist uppercase">Security Boundary Review</p>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-mist">
             AI compresses attack time. Structural security compresses blast radius. Record the domains, the paths,
-            and the evidence — then a person decides. This is not a certification.
+            and the evidence — then a person decides. This runs in your browser only. It is not certification, enforcement, independent verification, or an immutable record.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
