@@ -9,7 +9,7 @@
     "test": "node --experimental-strip-types --test src/lib/ledger.test.ts"
   },
   "dependencies": {
-    "lucide-react": "^0.510.0",
+    "lucide-react": "^1.57.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
