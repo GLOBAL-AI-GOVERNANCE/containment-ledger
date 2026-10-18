@@ -562,8 +562,6 @@ export function LedgerApp() {
         <p className="mt-3 font-semibold text-bone">
           <a className="text-brass underline decoration-line underline-offset-2" href="/global-ai-governance-toolkit/connect.html#agents">Connect your agent</a>
           {" · "}
-          <a className="text-brass underline decoration-line underline-offset-2" href="/global-ai-governance-toolkit/connect.html#pilot">Run a pilot</a>
-          {" · "}
           <a className="text-brass underline decoration-line underline-offset-2" href="/global-ai-governance-toolkit/connect.html#spec">Read the spec</a>
         </p>
         <p className="mt-1">
