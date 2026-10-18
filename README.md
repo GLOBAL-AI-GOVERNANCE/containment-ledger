@@ -54,6 +54,8 @@ Evidence marks are self-reported until an independent check exists. A self-repor
 
 ## Run locally
 
+Requires Node.js 22.12 or later; earlier versions cannot run the test script or the production build.
+
 ```bash
 npm install
 npm test
