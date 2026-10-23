@@ -2,11 +2,11 @@
 
 **Security Boundary Review**
 
-<!-- gag:nav -->
+<!-- gaig:nav -->
 [![Global AI Governance](https://img.shields.io/badge/Global_AI_Governance-portfolio-0b100d)](https://github.com/GLOBAL-AI-GOVERNANCE/GLOBAL-AI-GOVERNANCE) ![Status](https://img.shields.io/badge/status-unreleased_instrument-lightgrey) ![authority_effect](https://img.shields.io/badge/authority__effect-NONE-lightgrey)
 
 **[Connect your agent](https://global-ai-governance.github.io/global-ai-governance-toolkit/connect.html#agents)** · **[Read the spec](https://global-ai-governance.github.io/global-ai-governance-toolkit/connect.html#spec)** · [All products](https://github.com/GLOBAL-AI-GOVERNANCE/GLOBAL-AI-GOVERNANCE#product-map)
-<!-- /gag:nav -->
+<!-- /gaig:nav -->
 
 A local, browser-based review of one system's security domains, the boundary paths between them, evidence marks, and a human disposition.
 
@@ -68,7 +68,7 @@ The opening record is a synthetic mission-records cell. It is not an assessment 
 
 Apache License 2.0. See `LICENSE` and `NOTICE`.
 
-<!-- gag:footer -->
+<!-- gaig:footer -->
 ## Part of Global AI Governance
 
 Containment Ledger is an independent security boundary review instrument in the Global AI Governance portfolio.
@@ -77,4 +77,4 @@ Containment Ledger is an independent security boundary review instrument in the 
 - **Read the spec:** [versioned specifications](https://global-ai-governance.github.io/global-ai-governance-toolkit/connect.html#spec) and the [product map](https://github.com/GLOBAL-AI-GOVERNANCE/GLOBAL-AI-GOVERNANCE#product-map).
 
 Outputs are non-authorizing (`authority_effect: NONE`). Not affiliated with or endorsed by any AI lab or platform.
-<!-- /gag:footer -->
+<!-- /gaig:footer -->
