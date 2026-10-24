@@ -232,7 +232,7 @@ export function LedgerApp() {
           <p className="mt-1 font-mono text-xs tracking-wide text-mist uppercase">Security Boundary Review</p>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-mist">
             AI compresses attack time. Structural security compresses blast radius. Record the domains, the paths,
-            and the evidence — then a person decides. This runs in your browser only. It is not certification, enforcement, independent verification, or an immutable record.
+            and the evidence, then a person decides with care. This runs in your browser only. It is not certification, enforcement, independent verification, or an immutable record.
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
