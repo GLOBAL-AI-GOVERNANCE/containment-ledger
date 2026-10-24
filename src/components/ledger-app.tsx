@@ -225,9 +225,9 @@ export function LedgerApp() {
           Connect your agent
         </a>
       </nav>
-      <header id="ledger-content" tabIndex={-1} className="mb-8 flex flex-col gap-4 border-b border-line pb-6 sm:flex-row sm:items-end sm:justify-between">
+      <header id="ledger-content" tabIndex={-1} className="g-field mb-8 flex flex-col gap-4 border-b border-line pb-6 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="font-mono text-xs tracking-widest text-mist uppercase">Global AI Governance</p>
+          <p className="font-mono text-xs tracking-[var(--g-tracking-label)] text-mist uppercase">Global AI Governance</p>
           <h1 className="mt-2 text-3xl font-medium tracking-tight text-bone sm:text-4xl">Containment Ledger</h1>
           <p className="mt-1 font-mono text-xs tracking-wide text-mist uppercase">Security Boundary Review</p>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-mist">
