@@ -99,6 +99,10 @@ code, pre, kbd, samp, .g-badge { font-variant-numeric: tabular-nums slashed-zero
     text-rendering: optimizeLegibility;
   }
 
+  html {
+    scrollbar-gutter: stable;
+  }
+
   :focus-visible {
     outline: 2px solid var(--g-focus);
     outline-offset: 2px;
