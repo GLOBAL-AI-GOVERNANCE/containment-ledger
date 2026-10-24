@@ -3,7 +3,7 @@
 **Security Boundary Review**
 
 <!-- gaig:nav -->
-**[Global AI Governance](https://ai-governance.solutions/)** · `unreleased · instrument` · `authority_effect: NONE`
+**[Global AI Governance](https://ai-governance.solutions/)** · `v1.0.0 · released` · `authority_effect: NONE`
 
 [Connect your agent](https://ai-governance.solutions/connect.html#agents) · [Specifications](https://ai-governance.solutions/connect.html#spec) · [All products](https://ai-governance.solutions/#products)
 <!-- /gaig:nav -->
@@ -65,6 +65,17 @@ npm run dev
 ```
 
 Then open `http://127.0.0.1:4173/`.
+
+### Run a released copy offline
+
+Each [release](https://github.com/GLOBAL-AI-GOVERNANCE/containment-ledger/releases/latest) includes `containment-ledger-<version>-site.zip`, a self-contained build with `SHA256SUMS.txt` and a build-provenance attestation. Verify, unzip, and serve it from any static server:
+
+```bash
+sha256sum -c SHA256SUMS.txt --ignore-missing
+gh attestation verify containment-ledger-v1.0.0-site.zip --repo GLOBAL-AI-GOVERNANCE/containment-ledger
+unzip containment-ledger-v1.0.0-site.zip -d containment-ledger
+python3 -m http.server 4173 --bind 127.0.0.1 --directory containment-ledger
+```
 
 The opening record is a synthetic mission-records cell. It is not an assessment of a real system.
 
