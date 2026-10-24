@@ -187,7 +187,7 @@ export function LedgerApp() {
   if (!mounted) {
     return (
       <main className="mx-auto min-h-screen max-w-6xl px-4 py-10">
-        <p className="font-mono text-xs tracking-widest text-brass uppercase">Global AI Governance</p>
+        <p className="font-mono text-xs tracking-widest text-mist uppercase">Global AI Governance</p>
         <h1 className="mt-2 text-3xl font-medium text-bone">Containment Ledger</h1>
         <p className="mt-1 font-mono text-xs tracking-wide text-mist uppercase">Security Boundary Review</p>
         <p className="mt-2 max-w-xl text-sm text-mist">
@@ -209,24 +209,25 @@ export function LedgerApp() {
         aria-label="Global AI Governance sites"
         className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 border-b border-line pb-3 text-xs text-mist"
       >
-        <a className="font-semibold tracking-widest text-bone uppercase" href="/global-ai-governance-toolkit/connect.html">
+        <a className="font-semibold tracking-widest text-bone uppercase" href="https://ai-governance.solutions/">
           Global AI Governance
         </a>
         <span className="flex flex-1 flex-wrap gap-4">
-          <a className="hover:text-bone" href="/global-ai-governance-toolkit/">Toolkit</a>
+          <a className="hover:text-bone" href="https://ai-governance.solutions/#toolkit">Toolkit</a>
+          <a className="hover:text-bone" href="https://ai-governance.solutions/connect.html">Connect</a>
           <a className="text-bone" href="/containment-ledger/" aria-current="page">Containment Ledger</a>
           <a className="hover:text-bone" href="/peace-os/">Peace OS</a>
         </span>
         <a
-          className="rounded-card border border-brass px-3 py-1 font-semibold text-brass"
-          href="/global-ai-governance-toolkit/connect.html#agents"
+          className="rounded-card border border-mist px-3 py-1 font-semibold text-bone hover:border-bone hover:bg-bone hover:text-ink"
+          href="https://ai-governance.solutions/connect.html#agents"
         >
           Connect your agent
         </a>
       </nav>
       <header id="ledger-content" tabIndex={-1} className="mb-8 flex flex-col gap-4 border-b border-line pb-6 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="font-mono text-xs tracking-widest text-brass uppercase">Global AI Governance</p>
+          <p className="font-mono text-xs tracking-widest text-mist uppercase">Global AI Governance</p>
           <h1 className="mt-2 text-3xl font-medium tracking-tight text-bone sm:text-4xl">Containment Ledger</h1>
           <p className="mt-1 font-mono text-xs tracking-wide text-mist uppercase">Security Boundary Review</p>
           <p className="mt-2 max-w-xl text-sm leading-relaxed text-mist">
@@ -373,6 +374,7 @@ export function LedgerApp() {
                         onClick={() => setPath(a.id, b.id, opt)}
                         className={
                           "h-11 rounded-card border px-2 text-xs " +
+                          (status === opt ? "font-semibold " : "hover:border-mist hover:text-bone ") +
                           (status === opt
                             ? opt === "implicit"
                               ? "border-gap bg-gap text-ink"
@@ -445,6 +447,7 @@ export function LedgerApp() {
                         onClick={() => setEvidence(c.id, opt)}
                         className={
                           "h-11 rounded-card border text-xs " +
+                          (value === opt ? "font-semibold " : "hover:border-mist hover:text-bone ") +
                           (value === opt
                             ? opt === "evidenced"
                               ? "border-sage bg-sage text-ink"
@@ -560,9 +563,9 @@ export function LedgerApp() {
         . Ten checks here are a simplified interface. They do not replace that framework's 20-item checklist. The
         record stays in this browser. AI may assist. Humans retain authority.
         <p className="mt-3 font-semibold text-bone">
-          <a className="text-brass underline decoration-line underline-offset-2" href="/global-ai-governance-toolkit/connect.html#agents">Connect your agent</a>
+          <a className="text-brass underline decoration-line underline-offset-2" href="https://ai-governance.solutions/connect.html#agents">Connect your agent</a>
           {" · "}
-          <a className="text-brass underline decoration-line underline-offset-2" href="/global-ai-governance-toolkit/connect.html#spec">Read the spec</a>
+          <a className="text-brass underline decoration-line underline-offset-2" href="https://ai-governance.solutions/connect.html#spec">Read the spec</a>
         </p>
         <p className="mt-1">
           Global AI Governance · Outputs are non-authorizing (<code>authority_effect: NONE</code>) · Compatible with MCP-based agents
