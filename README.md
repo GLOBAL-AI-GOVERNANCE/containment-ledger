@@ -57,10 +57,14 @@ Evidence marks are self-reported until an independent check exists. A self-repor
 Requires Node.js 22.12 or later; earlier versions cannot run the test script or the production build.
 
 ```bash
-npm install
+git clone https://github.com/GLOBAL-AI-GOVERNANCE/containment-ledger.git
+cd containment-ledger
+npm ci
 npm test
 npm run dev
 ```
+
+Then open `http://127.0.0.1:4173/`.
 
 The opening record is a synthetic mission-records cell. It is not an assessment of a real system.
 
