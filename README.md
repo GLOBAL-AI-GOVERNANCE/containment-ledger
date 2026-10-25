@@ -5,7 +5,9 @@
 <!-- gaig:nav -->
 **[Global AI Governance](https://ai-governance.solutions/)** · `v1.0.0 · released` · `authority_effect: NONE`
 
-[Connect your agent](https://ai-governance.solutions/connect.html#agents) · [Specifications](https://ai-governance.solutions/connect.html#spec) · [All products](https://ai-governance.solutions/#products)
+[Start where you are](https://ai-governance.solutions/start.html) · [Connect your agent](https://ai-governance.solutions/connect.html#agents) · [Specifications](https://ai-governance.solutions/connect.html#spec) · [All products](https://ai-governance.solutions/#products)
+
+Suite path, step 6 of 9: mark boundaries · ← [Verified Vulnerability Governance](https://github.com/GLOBAL-AI-GOVERNANCE/verified-vulnerability-governance) · [AI Cyber Resilience Framework](https://github.com/GLOBAL-AI-GOVERNANCE/ai-cyber-resilience-framework) → · [start anywhere](https://ai-governance.solutions/start.html)
 <!-- /gaig:nav -->
 
 A local, browser-based review of one system's security domains, the boundary paths between them, evidence marks, and a human disposition.
