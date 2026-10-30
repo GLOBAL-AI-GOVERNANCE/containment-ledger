@@ -216,6 +216,8 @@ export function LedgerApp() {
           <a className="hover:text-bone" href="https://ai-governance.solutions/start.html">Start here</a>
           <a className="hover:text-bone" href="https://ai-governance.solutions/#toolkit">Toolkit</a>
           <a className="hover:text-bone" href="https://ai-governance.solutions/connect.html">Connect</a>
+          <a className="hover:text-bone" href="https://ai-governance.solutions/lead-agent/">Lead Agent</a>
+          <a className="hover:text-bone" href="https://ai-governance.solutions/interoperability.html">Interop</a>
           <a className="text-bone" href="/containment-ledger/" aria-current="page">Containment Ledger</a>
           <a className="hover:text-bone" href="/peace-os/">Peace OS</a>
         </span>
