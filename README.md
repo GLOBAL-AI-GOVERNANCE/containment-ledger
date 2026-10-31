@@ -16,7 +16,7 @@ A local, browser-based review of one system's security domains, the boundary pat
 
 Name the domains. Mark every path. Record evidence. A person decides.
 
-Containment Ledger is an independent repository. It shares vocabulary with the [AI Cyber Resilience Framework](https://github.com/GLOBAL-AI-GOVERNANCE/ai-cyber-resilience-framework) but is not part of it, does not replace its documentation, and is not part of the framework's published v0.1.1 release.
+Containment Ledger is an independent repository. It shares vocabulary with the [AI Cyber Resilience Framework](https://github.com/GLOBAL-AI-GOVERNANCE/ai-cyber-resilience-framework) but is not part of it, does not replace its documentation, and is not part of the framework's published v0.2.0 release.
 
 ## What a review does
 
